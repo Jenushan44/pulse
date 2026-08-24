@@ -19,3 +19,17 @@ selected_serial = st.selectbox("Select a drive", serial_numbers)
 
 drive_data = df[df["serial_number"] == selected_serial]
 selected_date = st.selectbox("Select a date", drive_data["date"].sort_values(ascending=False))
+
+selected_row = drive_data[drive_data["date"] == selected_date].iloc[[0]]
+model_features = selected_row[model.feature_names_in_]
+
+failure_probability = model.predict_proba(model_features)[0, 1]
+
+if failure_probability >= 0.3:
+    risk = "HIGH"
+else:
+    risk = "LOW"
+
+st.subheader("Prediction")
+st.metric("Failure Probability Within 30 Days", f"{failure_probability * 100:.1f}%")
+st.write("Risk:", risk)
